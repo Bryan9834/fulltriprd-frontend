@@ -17,11 +17,7 @@ function ReservaModal({ destino, onClose, onReservaExitosa }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-
-    const cerrarConEsc = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-
+    const cerrarConEsc = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", cerrarConEsc);
 
     return () => {
@@ -41,6 +37,7 @@ function ReservaModal({ destino, onClose, onReservaExitosa }) {
     const telefonoLimpio = telefono.trim();
     const cuposSolicitados = Number(personas);
 
+    // 🔎 Validaciones
     if (!nombreLimpio) return setErrorMsg("Debes ingresar tu nombre");
     if (!emailLimpio.includes("@") || !emailLimpio.includes("."))
       return setErrorMsg("Email inválido");
@@ -48,10 +45,38 @@ function ReservaModal({ destino, onClose, onReservaExitosa }) {
     if (!fecha) return setErrorMsg("Debes seleccionar una fecha");
     if (cuposSolicitados < 1)
       return setErrorMsg("Cantidad de personas inválida");
+    if (cuposSolicitados > destino.cupos)
+      return setErrorMsg(`No puedes reservar más de ${destino.cupos} personas`);
 
     setLoading(true);
 
     try {
+      // 1️⃣ Consultar reservas existentes para ese destino y fecha
+      const { data: reservasExistentes, error: errorConsulta } = await supabase
+        .from("reservas")
+        .select("personas")
+        .eq("destino_id", destino.id)
+        .eq("fecha", fecha);
+
+      if (errorConsulta) {
+        console.error(errorConsulta);
+        setErrorMsg("No se pudo verificar la disponibilidad.");
+        setLoading(false);
+        return;
+      }
+
+      const totalReservado = reservasExistentes.reduce(
+        (acc, r) => acc + r.personas,
+        0
+      );
+
+      if (totalReservado + cuposSolicitados > destino.cupos) {
+        setErrorMsg("No hay suficientes cupos disponibles para esta fecha.");
+        setLoading(false);
+        return;
+      }
+
+      // 2️⃣ Insertar reserva (UN SOLO INSERT)
       const { error: insertError } = await supabase
         .from("reservas")
         .insert({
@@ -66,18 +91,20 @@ function ReservaModal({ destino, onClose, onReservaExitosa }) {
 
       if (insertError) {
         if (insertError.code === "23505") {
-          setErrorMsg(
-            "Ya tienes una reserva para este destino en esta fecha."
-          );
+          setErrorMsg("Ya tienes una reserva para esa fecha.");
         } else {
-          throw insertError;
+          console.error(insertError);
+          setErrorMsg("Ocurrió un error creando la reserva.");
         }
+        setLoading(false);
         return;
       }
 
+      // 3️⃣ Reserva exitosa
       setReservaExitosa(true);
       onReservaExitosa?.(cuposSolicitados);
 
+      // 4️⃣ Mensaje WhatsApp automático
       const mensaje = [
         "Hola 👋, acabo de hacer una reserva en FullTripRD 🌴",
         "",
@@ -86,8 +113,7 @@ function ReservaModal({ destino, onClose, onReservaExitosa }) {
         `👥 Personas: ${cuposSolicitados}`,
         "",
         "💳 Información de pago:",
-        destino.cuenta_pago ||
-          "Te enviaremos la información de pago en breve",
+        destino.cuenta_pago || "Te enviaremos la información de pago en breve",
         "",
         "👉 Únete al grupo aquí:",
         destino.whatsapp_grupo ||
@@ -99,8 +125,8 @@ function ReservaModal({ destino, onClose, onReservaExitosa }) {
         "_blank"
       );
     } catch (err) {
-      console.error("Error procesando reserva:", err);
-      setErrorMsg("Ocurrió un error, intenta nuevamente");
+      console.error(err);
+      setErrorMsg("Ocurrió un error, intenta nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -177,11 +203,7 @@ function ReservaModal({ destino, onClose, onReservaExitosa }) {
             {loading ? "Reservando..." : "Confirmar reserva"}
           </button>
 
-          <button
-            className="cancelar"
-            onClick={onClose}
-            disabled={loading}
-          >
+          <button className="cancelar" onClick={onClose} disabled={loading}>
             Cancelar
           </button>
         </motion.div>
