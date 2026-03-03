@@ -1,0 +1,26 @@
+.destinos {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.destinos h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.destinos p {
+  color: #555;
+}
+
+.mensaje {
+  color: green;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.destinos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}

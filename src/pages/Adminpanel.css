@@ -1,0 +1,276 @@
+:root {
+  --color-principal: #319fa8;
+  --color-secundario: #0d2a2f;
+  --color-acento: #f5b400;
+  --color-confirmar: #00796b;
+  --color-cancelar: #d32f2f;
+  --color-fondo: #f4f6f9;
+  --color-card: #ffffff;
+  --color-texto: #1f2937;
+  --color-border: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Inter", "Poppins", sans-serif;
+}
+
+/* ================= WRAPPER ================= */
+
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+/* 🔥 FIX DEFINITIVO CONTRA HERENCIA BLANCA */
+.admin-wrapper,
+.admin-main,
+.admin-main * {
+  color: var(--color-texto);
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+  width: 240px;
+  background: white;
+  border-right: 1px solid var(--color-border);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sidebar h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-principal);
+  margin: 0;
+}
+
+.sidebar nav button {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  width: 100%;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar nav button:hover {
+  background: #f3f4f6;
+  color: var(--color-principal);
+}
+
+.sidebar nav button.active {
+  background: var(--color-principal);
+  color: white;
+}
+
+/* ================= MAIN ================= */
+
+.admin-main {
+  flex: 1;
+  padding: 2.5rem;
+}
+
+/* ================= HEADER ================= */
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.admin-header p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: var(--color-card);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+}
+
+.card h3 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ================= FILTROS ================= */
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filters select,
+.filters input {
+  padding: 0.7rem 1rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--color-border);
+  background: white;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.filters select:focus,
+.filters input:focus {
+  outline: none;
+  border-color: var(--color-principal);
+  box-shadow: 0 0 0 3px rgba(49, 159, 168, 0.15);
+}
+
+/* ================= TABLA ================= */
+
+.table-container {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th,
+table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+table th {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid var(--color-border);
+}
+
+table tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.2s;
+}
+
+table tr:hover {
+  background: #f9fafb;
+}
+
+/* ================= ESTADOS ================= */
+
+.estado {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.estado.pendiente {
+  color: var(--color-acento);
+}
+
+.estado.confirmada {
+  color: var(--color-confirmar);
+}
+
+.estado.cancelada {
+  color: var(--color-cancelar);
+}
+
+/* ================= BOTONES ================= */
+
+.confirm-btn,
+.cancel-btn,
+.logout-btn {
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.confirm-btn {
+  background: var(--color-confirmar);
+  color: white;
+}
+
+.confirm-btn:hover {
+  opacity: 0.85;
+}
+
+.cancel-btn {
+  background: var(--color-cancelar);
+  color: white;
+}
+
+.cancel-btn:hover {
+  opacity: 0.85;
+}
+
+.logout-btn {
+  background: #111827;
+  color: white;
+}
+
+.logout-btn:hover {
+  opacity: 0.85;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
