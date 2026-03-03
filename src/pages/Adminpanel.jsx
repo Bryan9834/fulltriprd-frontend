@@ -26,6 +26,7 @@ function AdminPanel() {
   const [estadoFiltro, setEstadoFiltro] = useState("todos");
   const [fechaFiltro, setFechaFiltro] = useState("");
   const [busqueda, setBusqueda] = useState("");
+  const [orden, setOrden] = useState("reciente");
 
   // Verificar usuario
   useEffect(() => {
@@ -54,8 +55,11 @@ function AdminPanel() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) console.error("Error cargando reservas:", error);
-      else setReservas(data || []);
+      if (error) {
+        console.error("Error cargando reservas:", error);
+      } else {
+        setReservas(data || []);
+      }
 
       setLoading(false);
     };
@@ -111,23 +115,31 @@ function AdminPanel() {
   const confirmadas = reservas.filter((r) => r.estado === "confirmada").length;
   const canceladas = reservas.filter((r) => r.estado === "cancelada").length;
 
-  // Aplicar filtros combinados
-  const reservasFiltradas = reservas.filter((r) => {
-    if (estadoFiltro !== "todos" && r.estado !== estadoFiltro) return false;
-    if (fechaFiltro && r.fecha !== fechaFiltro) return false;
+  // Aplicar filtros + orden
+  const reservasFiltradas = reservas
+    .filter((r) => {
+      if (estadoFiltro !== "todos" && r.estado !== estadoFiltro) return false;
+      if (fechaFiltro && r.fecha !== fechaFiltro) return false;
 
-    if (busqueda) {
-      const texto = busqueda.toLowerCase();
-      const nombre = r.nombre?.toLowerCase() || "";
-      const email = r.email?.toLowerCase() || "";
+      if (busqueda) {
+        const texto = busqueda.toLowerCase();
+        const nombre = r.nombre?.toLowerCase() || "";
+        const email = r.email?.toLowerCase() || "";
 
-      if (!nombre.includes(texto) && !email.includes(texto)) {
-        return false;
+        if (!nombre.includes(texto) && !email.includes(texto)) {
+          return false;
+        }
       }
-    }
 
-    return true;
-  });
+      return true;
+    })
+    .sort((a, b) => {
+      if (orden === "reciente") {
+        return new Date(b.created_at) - new Date(a.created_at);
+      } else {
+        return new Date(a.created_at) - new Date(b.created_at);
+      }
+    });
 
   return (
     <div className="admin-wrapper">
@@ -185,6 +197,23 @@ function AdminPanel() {
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
+
+          <select value={orden} onChange={(e) => setOrden(e.target.value)}>
+            <option value="reciente">Más reciente</option>
+            <option value="antiguo">Más antiguo</option>
+          </select>
+
+          <button
+            className="reset-btn"
+            onClick={() => {
+              setEstadoFiltro("todos");
+              setFechaFiltro("");
+              setBusqueda("");
+              setOrden("reciente");
+            }}
+          >
+            Limpiar filtros
+          </button>
         </div>
 
         {/* TABLA */}
